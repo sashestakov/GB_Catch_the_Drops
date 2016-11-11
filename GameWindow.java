@@ -20,10 +20,12 @@ public class GameWindow extends JFrame{
         game_window.add(game_field);
         game_window.setVisible(true);
         game_window.setTitle("Поймай каплю");
+
     }
     private static void onRepaint(Graphics g){
         g.fillOval(50,50,200,100);
         g.fillOval(10,10,200,100);
+        g.drawLine(10, 10, 50, 50);
     }
 
     private static class GameField extends JPanel{
