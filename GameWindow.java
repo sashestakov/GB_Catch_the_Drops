@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.sql.Time;
 
 public class GameWindow extends JFrame{
 
@@ -13,21 +14,26 @@ public class GameWindow extends JFrame{
     private static Image background;
     private static Image drop;
     private static Image game_over;
+
+// Пункты меню
+//    private static Image game_start;
+//    private static Image game_exit;
+    private static Image game_restart;
+
     private static float drop_left = 100;
     private static float drop_top = -100;
     private static long last_frame_time;
     private static float drop_v=100;
     private static int score=0;
 
-// Дополнительные поля для ограничения игры
-    private static int game_range;
-
+// Дополнительные поля
 
     public static void main(String[] args) throws IOException {
 	    background = ImageIO.read(GameWindow.class.getResourceAsStream("background.png"));
         drop = ImageIO.read(GameWindow.class.getResourceAsStream("drop.png"));
         game_over = ImageIO.read(GameWindow.class.getResourceAsStream("game_over.png"));
         last_frame_time = System.nanoTime();
+        game_restart = ImageIO.read(GameWindow.class.getResourceAsStream("restart.png"));
 
 //todo добавить меню игры
 
@@ -38,6 +44,7 @@ public class GameWindow extends JFrame{
         game_window.setLocation(200,100);
         game_window.setSize(906,478);
         game_window.setResizable(false);
+//        time = new Time(temp_time);
 
         GameField game_field = new GameField();
         game_field.addMouseListener(new MouseAdapter() {
@@ -53,18 +60,16 @@ public class GameWindow extends JFrame{
                     drop_left = (int) (Math.random()*(game_window.getWidth() - drop.getWidth(null)));
                     drop_v+=10;
                     score++;
-                    game_window.setTitle("Catche a drop. Your score: "+ score);
+                    game_window.setTitle("Catche a drop. Your score: "+ score +"  " + new Time(System.currentTimeMillis()));
                 }
             }
         });
 
-
-
         game_window.add(game_field);
         game_window.setVisible(true);
-        game_window.setTitle("Catche a drop. Your score: "+ score);
-
+//        game_window.setTitle("Catche a drop. Your score: "+ score +"  " + new Time(System.currentTimeMillis()));
     }
+
     private static void onRepaint(Graphics g){
         long current_time = System.nanoTime();
         float delta_time = (current_time-last_frame_time)*0.000000001f;
@@ -73,7 +78,11 @@ public class GameWindow extends JFrame{
 
         g.drawImage(background,0,0,null);
         g.drawImage(drop, (int) drop_left, (int) drop_top, null);
-        if (drop_top>=game_window.getHeight()) { g.drawImage(game_over,280,100,null); }
+        if (drop_top>=game_window.getHeight()) {
+            g.drawImage(game_over,280,25,null);
+            g.drawImage(game_restart,200,300, null);
+        }
+        game_window.setTitle("Catche a drop. Your score: "+ score +"  " + new Time(System.currentTimeMillis()));
     }
 
     private static class GameField extends JPanel{
