@@ -43,7 +43,7 @@ public class GameWindow extends JFrame{
     private static long last_frame_time;
     private static int score=0;
 
-    private static void setImages() throws IOException{
+    private static void setImages() throws IOException{ // Загрузка изображений в наши переменные
         background = ImageIO.read(GameWindow.class.getResourceAsStream("background.png"));
         drop = ImageIO.read(GameWindow.class.getResourceAsStream("drop.png"));
         game_over = ImageIO.read(GameWindow.class.getResourceAsStream("game_over.png"));
@@ -52,7 +52,7 @@ public class GameWindow extends JFrame{
         game_exit = ImageIO.read(GameWindow.class.getResourceAsStream("exit.png"));
     }
 
-    private static void initGame(){
+    private static void initGame(){   // Установка значений по умолчанию при запуске игры
         drop_top = drop_top__default;
         drop_left = (int) (Math.random()*(game_window.getWidth() - drop.getWidth(null)));
         drop_v = drop_v__default;
@@ -60,7 +60,9 @@ public class GameWindow extends JFrame{
         last_frame_time = System.nanoTime();
     }
 
-    private static void playGame() {
+    private static void playGame() {  // Основная процедура управления игрой
+
+        // Вызываем загрузку изображений
         try { setImages(); }
         catch (IOException e) {
             JOptionPane.showMessageDialog(game_window, "Ошибка загрузки данных");
@@ -82,14 +84,19 @@ public class GameWindow extends JFrame{
 
                 float drop_right = drop_left + drop.getWidth(null);
                 float drop_bottom = drop_top + drop.getHeight(null);
+
+                // если щелчок по капле
                 boolean in_drop = x>=drop_left && x<=drop_right && y>=drop_top && y<=drop_bottom;
 
+                // в "старт"
                 boolean in_start = x>=game_start_left && x<=(game_start_left+game_start.getWidth(null))&&
                         y>=game_start_top && y<= (game_start_top+game_start.getHeight(null));
 
+                // в "Рестарт"
                 boolean in_restart = x>=game_restart_left && x<=(game_restart_left+game_restart.getWidth(null))&&
                         y>=game_restart_top && y<= (game_restart_top+game_restart.getHeight(null));
 
+                // в "выход"
                 boolean in_exit = x>=game_exit_left && x<=(game_exit_left+game_exit.getWidth(null))&&
                         y>=game_exit_top && y<= (game_exit_top+game_exit.getWidth(null));
 
@@ -101,7 +108,7 @@ public class GameWindow extends JFrame{
                     game_window.setTitle("Catche a drop. Your score: "+ score); // +"  "+ new Time(System.currentTimeMillis()));
                 }
 
-                if (show_menu && in_start) {
+                if (show_menu && in_start) { //если щелчок по картинке "Старт"
                     game_window.setTitle("In Start");
                     initGame();
                     show_menu = false;
@@ -109,29 +116,27 @@ public class GameWindow extends JFrame{
                     start_Game = true;
                 }
 
-                if ((show_menu || end_game)&& in_exit) { game_window.dispose(); }
+                if ((show_menu || end_game)&& in_exit) { game_window.dispose(); } //если щелчок по картинке "Выход"
 
-                if (end_game && in_restart) {
+                if (end_game && in_restart) { //если щелчок по картинке "Рестарт"
                     game_window.setTitle("In reStart");
                     initGame();
                     end_game = false;
                     start_Game = true;
                     show_menu = false;
                 }
-
             }
         });
-
         game_window.add(game_field);
         game_window.setVisible(true);
     }
 
-    private static void showMenu(Graphics g){
+    private static void showMenu(Graphics g){  //Показ стартового меню
         g.drawImage(game_start, (int)game_start_left, (int)game_start_top, null);
         g.drawImage(game_exit, (int) game_exit_left, (int) game_exit_top, null);
     }
 
-    private static void showEndGame(Graphics g){
+    private static void showEndGame(Graphics g){ //показ завершающего меню
         g.drawImage(game_over,280,25,null);
         g.drawImage(game_restart,(int) game_restart_left, (int) game_restart_top, null);
         g.drawImage(game_exit, (int) game_exit_left,(int) game_exit_top, null);
@@ -147,6 +152,8 @@ public class GameWindow extends JFrame{
         g.drawImage(background,0,0,null);
         if (show_menu) { showMenu(g); }
         if (end_game) { showEndGame(g); }
+
+//  ------- Начало Рисование капель при условии, что игра запущена --------
         if (start_Game) {
             long current_time = System.nanoTime();
             float delta_time = (current_time-last_frame_time)*0.000000001f;
@@ -159,6 +166,7 @@ public class GameWindow extends JFrame{
             }
             game_window.setTitle("Catche a drop. Your score: "+ score); // +"  " + new Time(System.currentTimeMillis()));
         }
+//  ------- Конец Рисование капель при условии, что игра запущена --------
     }
 
     private static class GameField extends JPanel{
